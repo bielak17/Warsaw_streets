@@ -63,9 +63,6 @@ def test():
                 else:
                     print(f"NOT seen: {r[0]} - {r[1]} - {r[2]}")
         print("\n---------------------------------------------\n\n\n")
-
-
-
     #Nominatim (OpenStreetMap) 1req/s
     geolocator = Nominatim(user_agent="geoapi_example")
     #location_bem = geolocator.reverse("52.26274105520976, 20.898388821074537", language="pl")
@@ -73,6 +70,8 @@ def test():
     #print(loc.raw.get("address", {}).get('suburb', None) or loc.raw.get("address", {}).get('city_district',None) or loc.raw.get("address", {}).get('borough', None)+"\n")
     #print("Skwer/Rondo:")
     #print(loc.address)
+
+
 
 #Class for creating district buttons on the interactive map. It adds color on hover based on if the district
 #was fully visited or not and on click changes to map of this district
@@ -150,14 +149,15 @@ class MainWindow(QMainWindow):
         #Prevension from editing the contents and size of the table by the user
         self.visited_table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.visited_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Fixed)
+        self.visited_table.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Fixed)
         con.close()
 
     #Function that loads main map and interactive buttons from .png and .svg files
     def load_svg(self):
         #Adding main map of the whole city
         Warsaw_scene = QGraphicsScene()
-        warsaw_map_path = os.path.join(os.path.dirname(__file__),"graphics","district_map.png")
-        district_svg_path = os.path.join(os.path.dirname(__file__),"graphics","district_map.svg")
+        warsaw_map_path = os.path.join(os.path.dirname(__file__),"graphics","maps","district_map.png")
+        district_svg_path = os.path.join(os.path.dirname(__file__),"graphics","maps","district_map.svg")
         pixmap = QPixmap(warsaw_map_path)
         map_item = QGraphicsPixmapItem(pixmap)
         map_item.setZValue(0)
