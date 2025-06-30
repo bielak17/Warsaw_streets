@@ -215,7 +215,7 @@
              <number>5</number>
             </property>
             <item>
-             <widget class="QStackedWidget" name="Maps">
+             <widget class="QStackedWidget" name="Map_stack">
               <property name="sizePolicy">
                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                 <horstretch>0</horstretch>

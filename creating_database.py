@@ -1,5 +1,4 @@
 import sqlite3
-from idlelib.browser import file_open
 
 districts = ["Bemowo","Białołęka","Bielany","Mokotów","Ochota","Praga Południe", "Praga Północ", "Rembertów", "Śródmieście", "Targówek", "Ursus", "Ursynów", "Wawer", "Wesoła", "Wilanów", "Włochy", "Wola", "Żoliborz"]
 neighborhoods = {
