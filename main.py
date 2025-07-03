@@ -245,8 +245,7 @@ class MainWindow(QMainWindow):
 
     def loadDistricts_svgs(self):
         #lists of all districts and corresponding widgets
-        dis = ["Bemowo","Bialoleka"]
-        #dis = ["Bemowo","Bialoleka","Bielany","Mokotow","Ochota","Praga Poludnie", "Praga Polnoc", "Rembertow", "Srodmiescie", "Targowek", "Ursus", "Ursynow", "Wawer", "Wesola", "Wilanow", "Wlochy", "Wola", "Zoliborz"]
+        dis = ["Bemowo","Bialoleka","Bielany","Mokotow","Ochota","Praga Poludnie", "Praga Polnoc", "Rembertow", "Srodmiescie", "Targowek", "Ursus", "Ursynow", "Wawer", "Wesola", "Wilanow", "Wlochy", "Wola", "Zoliborz"]
         maps = [self.Map_Bemowo,self.Map_Bialoleka,self.Map_Bielany,self.Map_Mokotow,self.Map_Ochota,self.Map_PragaPoludnie,self.Map_PragaPolnoc,self.Map_Rembertow,self.Map_Srodmiescie,self.Map_Targowek,self.Map_Ursus,self.Map_Ursynow,self.Map_Wawer,self.Map_Wesola,self.Map_Wilanow,self.Map_Wlochy,self.Map_Wola,self.Map_Zoliborz]
         #For each district add map and create path from .svg file and display it in appropriate Widgets
         for d,map in zip(dis,maps):
@@ -281,9 +280,10 @@ class MainWindow(QMainWindow):
                         qp_path.closeSubpath()
                 if not qp_path.isEmpty() and not qp_path.currentPosition() == qp_path.elementAt(0):
                     qp_path.closeSubpath()
-                # Creating DistrictPathItem from the created path
+                # Creating NeighborhoodPathItem from the created path
                 item = NeighborhoodPathItem(qp_path, neighborhood_id)
                 item.setZValue(1)
+                #Assign functions based on the purpose of the path: if its back, whole district or separate neighborhoods
                 if neighborhood_id == "0":
                     item.mousePressEvent = lambda event: self._on_whole_district_clicked()
                 elif neighborhood_id == "back":
@@ -296,11 +296,11 @@ class MainWindow(QMainWindow):
             map.setScene(district_scene)
             map.setInteractive(True)
 
-    #buttons on map while clicking district/neighborhoods or back/whole_district buttons
+    #buttons on map while clicking district/neighborhoods or back/whole_district
     def _on_district_clicked(self,d_id):
         self.current_district = int(d_id)
         self.Map_stack.setCurrentIndex(self.current_district)
-        print(f"District with {self.current_district} clicked.")
+        #print(f"District with {self.current_district} clicked.")
 
     def _on_neighborhood_clicked(self,n_id):
         self.current_neighborhood = int(n_id)
@@ -310,7 +310,7 @@ class MainWindow(QMainWindow):
         self.current_district = 0
         self.current_neighborhood = 0
         self.Map_stack.setCurrentIndex(self.current_district)
-        print("Going back to main map")
+        #print("Going back to main map")
 
     def _on_whole_district_clicked(self):
         self.current_neighborhood = 0
