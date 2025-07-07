@@ -1,19 +1,17 @@
-import sqlite3
-import sys
 import os
 import webbrowser
-
-from PyQt5.QtCore import Qt, pyqtSignal, QObject
 from geopy.geocoders import Nominatim
-from PyQt5.QtGui import QPixmap, QPainter, QColor, QPainterPath, QPen, QBrush
+
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QPixmap, QPainter, QColor, QPainterPath, QPen, QBrush, QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QGraphicsScene, QGraphicsPixmapItem, \
-    QGraphicsPathItem, QGraphicsView
+    QGraphicsPathItem, QPushButton, QWidget, QHBoxLayout
 from PyQt5 import uic, QtWidgets
 
 import xml.etree.ElementTree as ET
 from svg.path import parse_path, Move, Line, Close
 
-from creating_database import districts
+import database_searches as db
 
 
 def open_map(street_name):
@@ -21,65 +19,21 @@ def open_map(street_name):
     url = f"https://www.google.com/maps/search/{query.replace(' ', '+')}"
     webbrowser.open(url)
 
-def test():
-    con = sqlite3.connect("Streets_clean.db")
-    cursor = con.cursor()
-    program = True
-    while program:
-        print("Testowe pokazywanie w konsoli:\n")
-        cursor.execute("SELECT id,district FROM districts ORDER BY id ASC")
-        dist_help = cursor.fetchall()
-        for r in dist_help:
-            print(f"{r[0]}-{r[1]}\n")
-        print(f"0-Wyjscie z programu\n")
-        dist_choice = int(input("Wybierz opcje z powyższych "))
-        if dist_choice == 0:
-            program = False
-            con.close()
-            sys.exit()
-        cursor.execute("SELECT id, neighborhood FROM neighborhoods WHERE district_id = ? ORDER BY id ASC",(dist_choice,))
-        neigh_help = cursor.fetchall()
-        for r in neigh_help:
-            print(f"{r[0]}-{r[1]}\n")
-        print("0-Cała dzielnica\n")
-        neigh_choice = int(input("Wybierz opcje z powyższych "))
-        if neigh_choice == 0:
-            cursor.execute("""SELECT streets.street, districts.district FROM streets
-                           INNER JOIN street_district ON street_district.street_id=streets.id
-                           INNER JOIN districts ON street_district.district_id=districts.id
-                           WHERE districts.id = ?
-                           ORDER BY streets.id ASC """,(dist_choice,))
-            print_help = cursor.fetchall()
-            for r in print_help:
-                print(r)
-        else:
-            cursor.execute("""SELECT streets.street, districts.district, neighborhoods.neighborhood, streets.seen FROM streets
-                           INNER JOIN street_neighborhoods ON street_neighborhoods.street_id=streets.id
-                           INNER JOIN neighborhoods ON street_neighborhoods.neighborhood_id=neighborhoods.id
-                           INNER JOIN districts ON neighborhoods.district_id=districts.id
-                           WHERE districts.id = ? AND neighborhoods.id = ?
-                           ORDER BY streets.id ASC""",(dist_choice,neigh_choice))
-            print_help = cursor.fetchall()
-            for r in print_help:
-                if r[3]:
-                    print(f"Seen: {r[0]} - {r[1]} - {r[2]}")
-                else:
-                    print(f"NOT seen: {r[0]} - {r[1]} - {r[2]}")
-        print("\n---------------------------------------------\n\n\n")
-    #Nominatim (OpenStreetMap) 1req/s
-    geolocator = Nominatim(user_agent="geoapi_example")
-    #location_bem = geolocator.reverse("52.26274105520976, 20.898388821074537", language="pl")
-    #print("Dzielnica: ")
-    #print(loc.raw.get("address", {}).get('suburb', None) or loc.raw.get("address", {}).get('city_district',None) or loc.raw.get("address", {}).get('borough', None)+"\n")
-    #print("Skwer/Rondo:")
-    #print(loc.address)
+#Nominatim (OpenStreetMap) 1req/s
+#geolocator = Nominatim(user_agent="geoapi_example")
+#location_bem = geolocator.reverse("52.26274105520976, 20.898388821074537", language="pl")
+#print("Dzielnica: ")
+#print(loc.raw.get("address", {}).get('suburb', None) or loc.raw.get("address", {}).get('city_district',None) or loc.raw.get("address", {}).get('borough', None)+"\n")
+#print("Skwer/Rondo:")
+#print(loc.address)
 
 
 #Class for creating district buttons on the interactive map. It adds color on hover based on if the district
 #was fully visited or not and on click changes to map of this district
 class DistrictPathItem(QGraphicsPathItem):
-    def __init__(self, path, district_id):
+    def __init__(self, path, district_id, db):
         super().__init__(path)
+        self.database = db
         self.district_id = district_id
         self.default_brush = QBrush(QColor(255,255,255,25))
         self.hover_red_brush = QBrush(QColor(255,0,0,35))
@@ -90,13 +44,7 @@ class DistrictPathItem(QGraphicsPathItem):
         self.setAcceptHoverEvents(True)
     #check if all streets in the district were visited
     def is_visited(self):
-        con = sqlite3.connect("Streets_clean.db")
-        cursor = con.cursor()
-        cursor.execute("""SELECT COUNT(street) FROM streets
-             INNER JOIN street_district ON streets.id = street_district.street_id
-             WHERE street_district.district_id=? AND seen = 0""",(self.district_id,))
-        info = cursor.fetchall()[0]
-        con.close()
+        info = self.database.how_many_not_seen_in_district(self.district_id)
         if info:
             return False
         else:
@@ -114,8 +62,9 @@ class DistrictPathItem(QGraphicsPathItem):
 # Class for creating neighborhoods buttons on the interactive map. It adds color on hover based on if the neighborhood
 # was fully visited or not and on click opens tab with all streets running through it
 class NeighborhoodPathItem(QGraphicsPathItem):
-    def __init__(self, path, neighborhood_id):
+    def __init__(self, path, neighborhood_id, db):
         super().__init__(path)
+        self.database = db
         self.neighborhood_id = neighborhood_id
         self.default_brush = QBrush(QColor(255,255,255,0))
         self.hover_red_brush = QBrush(QColor(255,0,0,55))
@@ -125,15 +74,9 @@ class NeighborhoodPathItem(QGraphicsPathItem):
         #No outline on the districts because the map has the outlines already
         self.setPen(QPen(QColor(0,0,0,0)))
         self.setAcceptHoverEvents(True)
-    #check if all streets in the district were visited
+    #check if all streets in the neighborhood were visited
     def is_visited(self):
-        con = sqlite3.connect("Streets_clean.db")
-        cursor = con.cursor()
-        cursor.execute("""SELECT COUNT(street) FROM streets
-             INNER JOIN street_neighborhoods ON streets.id = street_neighborhoods.street_id
-             WHERE street_neighborhoods.neighborhood_id=? AND seen = 0""",(self.neighborhood_id,))
-        info = cursor.fetchall()[0]
-        con.close()
+        info = self.database.how_many_not_seen_in_neighborhood(self.neighborhood_id)
         if info:
             return False
         else:
@@ -160,6 +103,8 @@ class MainWindow(QMainWindow):
         #Loading UI from .ui file
         super().__init__()
         self.init_ui()
+        #object of class database used to make SQL queries
+        self.database = db.Database("Streets_clean.db")
         #Updating table on the right with number of streets left to visit
         self.update_visited_table()
         #Load map of the whole city
@@ -171,6 +116,11 @@ class MainWindow(QMainWindow):
         self.Back_to_right_menu_1.clicked.connect(self._on_click_back_to_right_menu_button)
         self.Back_to_right_menu_2.clicked.connect(self._on_click_back_to_right_menu_button)
         self.GPX_button.clicked.connect(self._on_click_GPX_button)
+        self.back_to_map_button.clicked.connect(self._on_click_back_to_maps)
+        self.sort_button.toggled.connect(self._on_toggle_sort_by)
+        self.Search_button.clicked.connect(lambda: self._on_click_search_button("name"))
+        #also connecting enter in searchbar to searching
+        self.SearchBar.returnPressed.connect(lambda: self._on_click_search_button("name"))
 
 # Function for initializing UI from Mainmenuui.ui file created in QtDesigner
     def init_ui(self):
@@ -179,24 +129,17 @@ class MainWindow(QMainWindow):
 
     #Function that updates the visited table on the main screen with the number of left streets to visit
     def update_visited_table(self):
-        con = sqlite3.connect("Streets_clean.db")
-        cursor = con.cursor()
         # Filling table on main window with number of not visited streets per district.
         for i in range(18):
-            cursor.execute("""SELECT COUNT(street) FROM streets
-                     INNER JOIN street_district ON streets.id = street_district.street_id
-                     WHERE street_district.district_id=? AND seen = 0""", (i + 1,))
-            value = cursor.fetchone()[0]
+            value = self.database.how_many_not_seen_in_district(i+1)
             self.visited_table.setItem(i, 1, QTableWidgetItem(str(value)))
         # Caluclating all not visited street for SUM row and updating it.
-        cursor.execute("""SELECT COUNT(DISTINCT street) FROM streets WHERE seen = 0""")
-        value_all = cursor.fetchone()[0]
+        value_all = self.database.how_many_not_seen_in_whole_city()
         self.visited_table.setItem(18, 1, QTableWidgetItem(str(value_all)))
         #Prevension from editing the contents and size of the table by the user
         self.visited_table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.visited_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Fixed)
         self.visited_table.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Fixed)
-        con.close()
 
     #Function that loads main map and interactive buttons from .png and .svg files
     def load_WarsawMap_svg(self):
@@ -234,7 +177,7 @@ class MainWindow(QMainWindow):
             if not qp_path.isEmpty() and not qp_path.currentPosition() == qp_path.elementAt(0):
                 qp_path.closeSubpath()
             #Creating DistrictPathItem from the created path
-            item = DistrictPathItem(qp_path,district_id)
+            item = DistrictPathItem(qp_path,district_id,self.database)
             item.setZValue(1)
             item.mousePressEvent = lambda event, did=district_id: self._on_district_clicked(did)
             Warsaw_scene.addItem(item)
@@ -248,7 +191,7 @@ class MainWindow(QMainWindow):
         dis = ["Bemowo","Bialoleka","Bielany","Mokotow","Ochota","Praga Poludnie", "Praga Polnoc", "Rembertow", "Srodmiescie", "Targowek", "Ursus", "Ursynow", "Wawer", "Wesola", "Wilanow", "Wlochy", "Wola", "Zoliborz"]
         maps = [self.Map_Bemowo,self.Map_Bialoleka,self.Map_Bielany,self.Map_Mokotow,self.Map_Ochota,self.Map_PragaPoludnie,self.Map_PragaPolnoc,self.Map_Rembertow,self.Map_Srodmiescie,self.Map_Targowek,self.Map_Ursus,self.Map_Ursynow,self.Map_Wawer,self.Map_Wesola,self.Map_Wilanow,self.Map_Wlochy,self.Map_Wola,self.Map_Zoliborz]
         #For each district add map and create path from .svg file and display it in appropriate Widgets
-        for d,map in zip(dis,maps):
+        for d,m in zip(dis,maps):
             district_scene = QGraphicsScene()
             district_map_path = os.path.join(os.path.dirname(__file__),"graphics","maps",f"{d}_map.png")
             district_svg_path = os.path.join(os.path.dirname(__file__), "graphics", "maps", f"{d}_map.svg")
@@ -281,7 +224,7 @@ class MainWindow(QMainWindow):
                 if not qp_path.isEmpty() and not qp_path.currentPosition() == qp_path.elementAt(0):
                     qp_path.closeSubpath()
                 # Creating NeighborhoodPathItem from the created path
-                item = NeighborhoodPathItem(qp_path, neighborhood_id)
+                item = NeighborhoodPathItem(qp_path, neighborhood_id, self.database)
                 item.setZValue(1)
                 #Assign functions based on the purpose of the path: if its back, whole district or separate neighborhoods
                 if neighborhood_id == "0":
@@ -292,19 +235,59 @@ class MainWindow(QMainWindow):
                     item.mousePressEvent = lambda event, nid=neighborhood_id: self._on_neighborhood_clicked(nid)
                 district_scene.addItem(item)
             # Adding everything on to the map
-            map.setRenderHint(QPainter.Antialiasing)
-            map.setScene(district_scene)
-            map.setInteractive(True)
+            m.setRenderHint(QPainter.Antialiasing)
+            m.setScene(district_scene)
+            m.setInteractive(True)
 
-    #buttons on map while clicking district/neighborhoods or back/whole_district
+    #function to populate main table with streets given via info argument which contains all data fetched from SQL query
+    def _populate_table_with_data(self,info):
+        self.main_table.setRowCount(len(info))
+        for row_id, row_data in enumerate(info):
+            for col_id, value in enumerate(row_data):
+                #getting street name
+                if col_id == 1:
+                    street_name = value
+                # Setting graphics for the column is_visited
+                if col_id == 4:
+                    if value:
+                        icon = QIcon("graphics/green_tick.png")
+                    else:
+                        icon = QIcon("graphics/red_x.png")
+                    item = QTableWidgetItem()
+                    item.setIcon(icon)
+                    self.main_table.setIconSize(QSize(24, 24))
+                    item.setTextAlignment(Qt.AlignCenter)
+                    item.setText("")
+                else:
+                    item = QTableWidgetItem(str(value))
+                self.main_table.setItem(row_id, col_id, item)
+            # adding buttons to google maps page of each street to the table in the last column
+            button = QPushButton("Check street on map")
+            button.clicked.connect(lambda _, name=street_name: open_map(name))
+            cell_widget = QWidget()
+            layout = QHBoxLayout(cell_widget)
+            layout.addWidget(button)
+            layout.setContentsMargins(0, 0, 0, 0)  # no extra padding
+            layout.setAlignment(button, Qt.AlignCenter)
+            self.main_table.setCellWidget(row_id, 5, cell_widget)
+        self.main_table.resizeColumnsToContents()
+        self.main_table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.main_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Fixed)
+        self.main_table.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Fixed)
+
+    #4 buttons on map while clicking district/neighborhoods or back/whole_district
     def _on_district_clicked(self,d_id):
         self.current_district = int(d_id)
         self.Map_stack.setCurrentIndex(self.current_district)
         #print(f"District with {self.current_district} clicked.")
 
-    def _on_neighborhood_clicked(self,n_id):
+    def _on_neighborhood_clicked(self,n_id,sort="name"):
         self.current_neighborhood = int(n_id)
-        print(f"Neighborhood with {self.current_neighborhood} clicked.")
+        #print(f"Neighborhood with {self.current_neighborhood} clicked.")
+        self.mainORtable.setCurrentIndex(1)
+        info = self.database.all_streets_in_neighborhood(self.current_neighborhood,sort)
+        self._populate_table_with_data(info)
+        self.last_query = "neighborhood"
 
     def _on_back_to_full_map_clicked(self):
         self.current_district = 0
@@ -312,9 +295,13 @@ class MainWindow(QMainWindow):
         self.Map_stack.setCurrentIndex(self.current_district)
         #print("Going back to main map")
 
-    def _on_whole_district_clicked(self):
+    def _on_whole_district_clicked(self,sort="name"):
         self.current_neighborhood = 0
-        print("Whole district clicked")
+        #print("Whole district clicked")
+        self.mainORtable.setCurrentIndex(1)
+        info = self.database.all_streets_in_district(self.current_district,sort)
+        self._populate_table_with_data(info)
+        self.last_query = "district"
 
     #3 buttons to change the page on the smaller right StackedWidget
     def _on_click_instruction_button(self):
@@ -325,6 +312,44 @@ class MainWindow(QMainWindow):
 
     def _on_click_GPX_button(self):
         self.tabORinstORgpx.setCurrentIndex(2)
+
+    #button to go back from table to main map
+    def _on_click_back_to_maps(self):
+        self.sort_button.blockSignals(True)
+        self.sort_button.setChecked(False)
+        self.sort_button.blockSignals(False)
+        self.SearchBar.setText("")
+        self.mainORtable.setCurrentIndex(0)
+        self.current_neighborhood = 0
+
+    #button for sorting by name or seen it calls last used function but with different sorting order
+    def _on_toggle_sort_by(self):
+        if self.sort_button.isChecked():
+            match self.last_query:
+                case "search":
+                    self._on_click_search_button("visit")
+                case "district":
+                    self._on_whole_district_clicked("visit")
+                case "neighborhood":
+                    self._on_neighborhood_clicked(self.current_neighborhood,"visit")
+            self.sort_button.setText("Street ID")
+        else:
+            match self.last_query:
+                case "search":
+                    self._on_click_search_button("name")
+                case "district":
+                    self._on_whole_district_clicked("name")
+                case "neighborhood":
+                    self._on_neighborhood_clicked(self.current_neighborhood,"name")
+            self.sort_button.setText("Visited")
+
+    #button working with search bar. It captures the string from user and searches for streets that contain this string in its name
+    def _on_click_search_button(self,sort):
+        street_name = self.SearchBar.text()
+        self.mainORtable.setCurrentIndex(1)
+        info = self.database.search_for_street_name(street_name,sort)
+        self._populate_table_with_data(info)
+        self.last_query = "search"
 
 
 #Main - showing the application and running it until close is pressed
