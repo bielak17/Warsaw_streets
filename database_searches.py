@@ -53,14 +53,16 @@ class Database:
             order_by = "streets.id ASC"
         else:
             order_by = "streets.seen DESC,streets.id ASC"
-        self.cursor.execute(f"""SELECT streets.id, streets.street, GROUP_CONCAT(DISTINCT districts.district) as all_d,
+        self.cursor.execute(f"""SELECT streets.id, streets.street, GROUP_CONCAT(DISTINCT d2.district) as all_d,
                                     GROUP_CONCAT(DISTINCT neighborhoods.neighborhood) as all_n,
                                     streets.seen FROM streets
                                     JOIN street_neighborhoods ON street_neighborhoods.street_id = streets.id
                                     JOIN neighborhoods ON street_neighborhoods.neighborhood_id = neighborhoods.id
-                                    JOIN street_district ON street_district.street_id = streets.id
-                                    JOIN districts ON street_district.district_id = districts.id
-                                    WHERE districts.id = ?
+                                    JOIN street_district sd_filter ON sd_filter.street_id = streets.id
+                                    JOIN districts d_filter ON sd_filter.district_id = d_filter.id
+                                    JOIN street_district sd2 ON sd2.street_id = streets.id
+                                    JOIN districts d2 ON sd2.district_id = d2.id
+                                    WHERE d_filter.id = ?
                                     GROUP BY streets.street
                                     ORDER BY {order_by}""", (d_id,))
         value = self.cursor.fetchall()
@@ -83,3 +85,14 @@ class Database:
                                     ORDER BY {order_by}""", (f"%{street_name}%",))
         value = self.cursor.fetchall()
         return value
+
+    def change_seen_value(self,street_id,is_visited):
+        if is_visited:
+            self.cursor.execute("""UPDATE streets
+                                        SET seen = 0
+                                        WHERE streets.id = ?""",(street_id,))
+        else:
+            self.cursor.execute("""UPDATE streets
+                                        SET seen = 1
+                                        WHERE streets.id = ?""",(street_id,))
+        self.con.commit()

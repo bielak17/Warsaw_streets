@@ -6,14 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1349</width>
-    <height>1200</height>
+    <width>1325</width>
+    <height>1080</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
     <width>1325</width>
-    <height>1200</height>
+    <height>1080</height>
    </size>
   </property>
   <property name="font">
@@ -35,15 +41,15 @@
   <widget class="QWidget" name="centralwidget">
    <property name="minimumSize">
     <size>
-     <width>1300</width>
-     <height>0</height>
+     <width>1325</width>
+     <height>1080</height>
     </size>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <layout class="QVBoxLayout" name="Main_layout">
       <property name="spacing">
-       <number>10</number>
+       <number>5</number>
       </property>
       <property name="sizeConstraint">
        <enum>QLayout::SetMinimumSize</enum>
@@ -1147,7 +1153,7 @@ Streets are broken down into districts.</string>
                    <bool>false</bool>
                   </attribute>
                   <attribute name="verticalHeaderDefaultSectionSize">
-                   <number>30</number>
+                   <number>36</number>
                   </attribute>
                   <row/>
                   <row/>
@@ -1582,7 +1588,7 @@ that were covered in Warsaw in that
              </size>
             </property>
             <property name="columnCount">
-             <number>6</number>
+             <number>7</number>
             </property>
             <attribute name="horizontalHeaderMinimumSectionSize">
              <number>60</number>
@@ -1613,6 +1619,11 @@ that were covered in Warsaw in that
             <column>
              <property name="text">
               <string>Visited</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Change visited</string>
              </property>
             </column>
             <column>

@@ -2,7 +2,7 @@ import os
 import webbrowser
 from geopy.geocoders import Nominatim
 
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, QTimer
 from PyQt5.QtGui import QPixmap, QPainter, QColor, QPainterPath, QPen, QBrush, QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QGraphicsScene, QGraphicsPixmapItem, \
     QGraphicsPathItem, QPushButton, QWidget, QHBoxLayout
@@ -37,11 +37,12 @@ class DistrictPathItem(QGraphicsPathItem):
         self.district_id = district_id
         self.default_brush = QBrush(QColor(255,255,255,25))
         self.hover_red_brush = QBrush(QColor(255,0,0,35))
-        self.hover_green_brush = QBrush(QColor(255,0,0,35))
+        self.hover_green_brush = QBrush(QColor(0,255,0,35))
         self.setBrush(self.default_brush)
         #No outline on the districts because the map has the outlines already
         self.setPen(QPen(QColor(0,0,0,0)))
         self.setAcceptHoverEvents(True)
+
     #check if all streets in the district were visited
     def is_visited(self):
         info = self.database.how_many_not_seen_in_district(self.district_id)
@@ -68,7 +69,7 @@ class NeighborhoodPathItem(QGraphicsPathItem):
         self.neighborhood_id = neighborhood_id
         self.default_brush = QBrush(QColor(255,255,255,0))
         self.hover_red_brush = QBrush(QColor(255,0,0,55))
-        self.hover_green_brush = QBrush(QColor(255,0,0,55))
+        self.hover_green_brush = QBrush(QColor(0,255,0,55))
         self.hover_info_brush = QBrush(QColor(155,155,155,75))
         self.setBrush(self.default_brush)
         #No outline on the districts because the map has the outlines already
@@ -106,11 +107,13 @@ class MainWindow(QMainWindow):
         #object of class database used to make SQL queries
         self.database = db.Database("Streets_clean.db")
         #Updating table on the right with number of streets left to visit
-        self.update_visited_table()
+        self._update_visited_table()
         #Load map of the whole city
         self.load_WarsawMap_svg()
         #Load all 18 maps of districts with neighborhoods
         self.loadDistricts_svgs()
+        # make the app cover the windows toolbar (it needs full 1080 so on smaller screens it needs to cover the toolbar)
+        #self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
         #Connecting buttons
         self.Instruction_button.clicked.connect(self._on_click_instruction_button)
         self.Back_to_right_menu_1.clicked.connect(self._on_click_back_to_right_menu_button)
@@ -128,7 +131,7 @@ class MainWindow(QMainWindow):
         uic.loadUi(ui_path, self)
 
     #Function that updates the visited table on the main screen with the number of left streets to visit
-    def update_visited_table(self):
+    def _update_visited_table(self):
         # Filling table on main window with number of not visited streets per district.
         for i in range(18):
             value = self.database.how_many_not_seen_in_district(i+1)
@@ -244,11 +247,15 @@ class MainWindow(QMainWindow):
         self.main_table.setRowCount(len(info))
         for row_id, row_data in enumerate(info):
             for col_id, value in enumerate(row_data):
+                #getting street id
+                if col_id == 0:
+                    s_id = value
                 #getting street name
                 if col_id == 1:
                     street_name = value
                 # Setting graphics for the column is_visited
                 if col_id == 4:
+                    visited = value
                     if value:
                         icon = QIcon("graphics/green_tick.png")
                     else:
@@ -261,15 +268,31 @@ class MainWindow(QMainWindow):
                 else:
                     item = QTableWidgetItem(str(value))
                 self.main_table.setItem(row_id, col_id, item)
+            # adding buttons to change the visited/seen value of each street in database
+            button_change_visit = QPushButton()
+            if visited:
+                button_change_visit.setText("Change to not seen")
+                button_change_visit.clicked.connect(lambda _, id=s_id,row=row_id,name=street_name: self._change_seen_value(row,id,1,name))
+            else:
+                button_change_visit.setText("Change to seen")
+                button_change_visit.clicked.connect(lambda _, id=s_id,row=row_id,name=street_name: self._change_seen_value(row,id,0,name))
+            cell_widget_change_visit = QWidget()
+            layout_change_visit = QHBoxLayout(cell_widget_change_visit)
+            layout_change_visit.addWidget(button_change_visit)
+            layout_change_visit.setContentsMargins(0, 0, 0, 0)  # no extra padding
+            layout_change_visit.setAlignment(button_change_visit, Qt.AlignCenter)
+            button_change_visit.setProperty("street_id", s_id)
+            button_change_visit.setProperty("street_name", street_name)
+            self.main_table.setCellWidget(row_id, 5, cell_widget_change_visit)
             # adding buttons to google maps page of each street to the table in the last column
-            button = QPushButton("Check street on map")
-            button.clicked.connect(lambda _, name=street_name: open_map(name))
-            cell_widget = QWidget()
-            layout = QHBoxLayout(cell_widget)
-            layout.addWidget(button)
-            layout.setContentsMargins(0, 0, 0, 0)  # no extra padding
-            layout.setAlignment(button, Qt.AlignCenter)
-            self.main_table.setCellWidget(row_id, 5, cell_widget)
+            button_to_map = QPushButton("Check street on map")
+            button_to_map.clicked.connect(lambda _, name=street_name: open_map(name))
+            cell_widget_to_map = QWidget()
+            layout_to_map = QHBoxLayout(cell_widget_to_map)
+            layout_to_map.addWidget(button_to_map)
+            layout_to_map.setContentsMargins(0, 0, 0, 0)
+            layout_to_map.setAlignment(button_to_map, Qt.AlignCenter)
+            self.main_table.setCellWidget(row_id, 6, cell_widget_to_map)
         self.main_table.resizeColumnsToContents()
         self.main_table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.main_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Fixed)
@@ -321,6 +344,7 @@ class MainWindow(QMainWindow):
         self.SearchBar.setText("")
         self.mainORtable.setCurrentIndex(0)
         self.current_neighborhood = 0
+        self._update_visited_table()
 
     #button for sorting by name or seen it calls last used function but with different sorting order
     def _on_toggle_sort_by(self):
@@ -350,6 +374,35 @@ class MainWindow(QMainWindow):
         info = self.database.search_for_street_name(street_name,sort)
         self._populate_table_with_data(info)
         self.last_query = "search"
+
+    #function assigned to the change_value button in table it changes the value and refreshes row in table
+    def _change_seen_value(self,row,street_id,is_visited,street_name):
+        #getting the button to disable it for a second and change its functionality
+        button_change_visit = self.main_table.cellWidget(row, 5).findChild(QPushButton)
+        button_change_visit.setEnabled(False)
+        self.database.change_seen_value(street_id,is_visited)
+        #getting the changed data
+        info = self.database.search_for_street_name(street_name,"name")
+        #based on new value in seen column change the image and button in the table
+        if info[0][4]:
+            icon = QIcon("graphics/green_tick.png")
+            QTimer.singleShot(0, lambda: button_change_visit.setText("Change to not seen"))
+            button_change_visit.clicked.disconnect()
+            button_change_visit.clicked.connect(lambda _, id = street_id, name=street_name, r=row: self._change_seen_value(r, id, 1, name))
+        else:
+            icon = QIcon("graphics/red_x.png")
+            QTimer.singleShot(0, lambda: button_change_visit.setText("Change to seen"))
+            button_change_visit.clicked.disconnect()
+            button_change_visit.clicked.connect(lambda _, id = street_id, name=street_name, r=row: self._change_seen_value(r, id, 0, name))
+        item = QTableWidgetItem()
+        item.setIcon(icon)
+        self.main_table.setIconSize(QSize(24, 24))
+        item.setTextAlignment(Qt.AlignCenter)
+        item.setText("")
+        self.main_table.setItem(row,4,item)
+        self.main_table.resizeColumnsToContents()
+        #enabling the button again after 0.2s
+        QTimer.singleShot(200, lambda: button_change_visit.setEnabled(True))
 
 
 #Main - showing the application and running it until close is pressed
