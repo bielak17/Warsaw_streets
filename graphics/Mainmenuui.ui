@@ -1093,12 +1093,13 @@
                    </font>
                   </property>
                   <property name="text">
-                   <string>In this table you can see how many
-streets you have not visited. 
-Streets are broken down into districts.</string>
+                   <string>In this table you can see how many streets you have not visited.  Streets are broken down into districts.</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
                   </property>
                  </widget>
                 </item>

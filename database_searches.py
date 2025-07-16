@@ -1,7 +1,11 @@
+import os.path
+import shutil
 import sqlite3
 
 class Database:
     def __init__(self,name):
+        if not os.path.exists(name):
+            shutil.copy("Streets_clean.db",name)
         self.db_name = name
         self.con = sqlite3.connect(self.db_name)
         self.cursor = self.con.cursor()
