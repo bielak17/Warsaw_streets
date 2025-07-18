@@ -4,6 +4,7 @@ import sqlite3
 
 class Database:
     def __init__(self,name):
+        #If the file is not existing in the folder create new db as a copy of Streets_clean
         if not os.path.exists(name):
             shutil.copy("Streets_clean.db",name)
         self.db_name = name
@@ -13,6 +14,7 @@ class Database:
     def __del__(self):
         self.con.close()
 
+    #SQL query that gets the number of not seen streets in the neighborhood with n_id
     def how_many_not_seen_in_neighborhood(self,n_id):
         self.cursor.execute("""SELECT COUNT(street) FROM streets
                                     INNER JOIN street_neighborhoods ON streets.id = street_neighborhoods.street_id
@@ -20,6 +22,7 @@ class Database:
         value = self.cursor.fetchone()[0]
         return value
 
+    # SQL query that gets the number of not seen streets in the district with d_id
     def how_many_not_seen_in_district(self,d_id):
         self.cursor.execute("""SELECT COUNT(street) FROM streets
                                     INNER JOIN street_district ON streets.id = street_district.street_id
@@ -27,11 +30,13 @@ class Database:
         value = self.cursor.fetchone()[0]
         return value
 
+    # SQL query that gets the number of not seen streets in the whole city
     def how_many_not_seen_in_whole_city(self):
         self.cursor.execute("""SELECT COUNT(DISTINCT street) FROM streets WHERE seen = 0""")
         value_all = self.cursor.fetchone()[0]
         return value_all
 
+    # SQL query that gets all the streets with districts and neighborhoods from specific neighborhood with n_id sorted by id or visited
     def all_streets_in_neighborhood(self,n_id,sort):
         if sort == "name":
             order_by = "streets.id ASC"
@@ -52,6 +57,7 @@ class Database:
         value = self.cursor.fetchall()
         return value
 
+    # SQL query that gets all the streets with districts and neighborhoods from specific district with d_id sorted by id or visited
     def all_streets_in_district(self,d_id,sort):
         if sort == "name":
             order_by = "streets.id ASC"
@@ -72,6 +78,7 @@ class Database:
         value = self.cursor.fetchall()
         return value
 
+    # SQL query that gets all the streets with districts and neighborhoods that contains the string street_name sorted by id or visited
     def search_for_street_name(self,street_name,sort):
         if sort == "name":
             order_by = "streets.id ASC"
@@ -90,6 +97,7 @@ class Database:
         value = self.cursor.fetchall()
         return value
 
+    # SQL query that changes the seen value of street with street_id
     def change_seen_value(self,street_id,is_visited):
         if is_visited:
             self.cursor.execute("""UPDATE streets
@@ -100,3 +108,14 @@ class Database:
                                         SET seen = 1
                                         WHERE streets.id = ?""",(street_id,))
         self.con.commit()
+
+    #
+    def get_neighborhoods(self,d_id):
+        if d_id == 0:
+            self.cursor.execute("""SELECT id,district FROM districts""")
+            value = self.cursor.fetchall()
+        else:
+            self.cursor.execute("""SELECT id,neighborhood FROM neighborhoods
+                                        WHERE district_id = ?""",(d_id,))
+            value = self.cursor.fetchall()
+        return value

@@ -3179,7 +3179,7 @@ Ulica Antoniego Chodorowskiego/Ursynów/Kabaty
 Ulica Chodzonego/Ursynów/Grabów
 Ulica Chóralna/Ursynów/Dąbrówka
 Ulica Cichej Wody/Ursynów/Kabaty
-Ulica Józefa Feliksa Ciszewskiego/Ursynów/Stary Służew,Ursynów Centrum,Ursynów Północny
+Ulica Jana Ciszewskiego/Ursynów/Stary Służew,Ursynów Centrum,Ursynów Północny
 Ulica Jana Cybisa/Ursynów/Ursynów Północny
 Ulica Cymbalistów/Ursynów/Jeziorki Południowe
 Ulica Cynamonowa/Ursynów/Ursynów Centrum

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1325</width>
-    <height>1080</height>
+    <height>1020</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="minimumSize">
    <size>
     <width>1325</width>
-    <height>1080</height>
+    <height>1020</height>
    </size>
   </property>
   <property name="font">
@@ -42,14 +42,20 @@
    <property name="minimumSize">
     <size>
      <width>1325</width>
-     <height>1080</height>
+     <height>1020</height>
     </size>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
+     <number>3</number>
+    </property>
+    <property name="topMargin">
+     <number>10</number>
+    </property>
     <item>
      <layout class="QVBoxLayout" name="Main_layout">
       <property name="spacing">
-       <number>5</number>
+       <number>3</number>
       </property>
       <property name="sizeConstraint">
        <enum>QLayout::SetMinimumSize</enum>
@@ -61,6 +67,18 @@
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>40</height>
+         </size>
         </property>
         <property name="font">
          <font>
@@ -112,6 +130,9 @@
           <bool>false</bool>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_6">
+          <property name="spacing">
+           <number>3</number>
+          </property>
           <item>
            <layout class="QHBoxLayout" name="Search_layout">
             <property name="spacing">
@@ -131,13 +152,13 @@
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>36</height>
+                <height>32</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
-                <height>36</height>
+                <height>32</height>
                </size>
               </property>
               <property name="font">
@@ -171,13 +192,13 @@
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>36</height>
+                <height>32</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
-                <height>36</height>
+                <height>32</height>
                </size>
               </property>
               <property name="font">
@@ -206,7 +227,7 @@
           <item>
            <layout class="QHBoxLayout" name="Map_layout">
             <property name="spacing">
-             <number>10</number>
+             <number>3</number>
             </property>
             <property name="leftMargin">
              <number>10</number>
@@ -1120,7 +1141,7 @@
                   <property name="maximumSize">
                    <size>
                     <width>335</width>
-                    <height>610</height>
+                    <height>650</height>
                    </size>
                   </property>
                   <property name="font">
@@ -1153,8 +1174,11 @@
                   <attribute name="verticalHeaderCascadingSectionResizes">
                    <bool>false</bool>
                   </attribute>
+                  <attribute name="verticalHeaderMinimumSectionSize">
+                   <number>32</number>
+                  </attribute>
                   <attribute name="verticalHeaderDefaultSectionSize">
-                   <number>36</number>
+                   <number>32</number>
                   </attribute>
                   <row/>
                   <row/>
@@ -1179,97 +1203,97 @@
                   <column/>
                   <item row="0" column="0">
                    <property name="text">
-                    <string>Bemowo</string>
+                    <string/>
                    </property>
                   </item>
                   <item row="1" column="0">
                    <property name="text">
-                    <string>Białołęka</string>
+                    <string/>
                    </property>
                   </item>
                   <item row="2" column="0">
                    <property name="text">
-                    <string>Bielany</string>
+                    <string/>
                    </property>
                   </item>
                   <item row="3" column="0">
                    <property name="text">
-                    <string>Mokotów</string>
+                    <string/>
                    </property>
                   </item>
                   <item row="4" column="0">
                    <property name="text">
-                    <string>Ochota</string>
+                    <string/>
                    </property>
                   </item>
                   <item row="5" column="0">
                    <property name="text">
-                    <string>Praga Południe</string>
+                    <string/>
                    </property>
                   </item>
                   <item row="6" column="0">
                    <property name="text">
-                    <string>Praga Północ</string>
+                    <string/>
                    </property>
                   </item>
                   <item row="7" column="0">
                    <property name="text">
-                    <string>Rembertów</string>
+                    <string/>
                    </property>
                   </item>
                   <item row="8" column="0">
                    <property name="text">
-                    <string>Śródmieście</string>
+                    <string/>
                    </property>
                   </item>
                   <item row="9" column="0">
                    <property name="text">
-                    <string>Targówek</string>
+                    <string/>
                    </property>
                   </item>
                   <item row="10" column="0">
                    <property name="text">
-                    <string>Ursus</string>
+                    <string/>
                    </property>
                   </item>
                   <item row="11" column="0">
                    <property name="text">
-                    <string>Ursynów</string>
+                    <string/>
                    </property>
                   </item>
                   <item row="12" column="0">
                    <property name="text">
-                    <string>Wawer</string>
+                    <string/>
                    </property>
                   </item>
                   <item row="13" column="0">
                    <property name="text">
-                    <string>Wesoła</string>
+                    <string/>
                    </property>
                   </item>
                   <item row="14" column="0">
                    <property name="text">
-                    <string>Wilanów</string>
+                    <string/>
                    </property>
                   </item>
                   <item row="15" column="0">
                    <property name="text">
-                    <string>Włochy</string>
+                    <string/>
                    </property>
                   </item>
                   <item row="16" column="0">
                    <property name="text">
-                    <string>Wola</string>
+                    <string/>
                    </property>
                   </item>
                   <item row="17" column="0">
                    <property name="text">
-                    <string>Żoliborz</string>
+                    <string/>
                    </property>
                   </item>
                   <item row="18" column="0">
                    <property name="text">
-                    <string>SUM</string>
+                    <string/>
                    </property>
                   </item>
                  </widget>
@@ -1317,32 +1341,29 @@
                    </font>
                   </property>
                   <property name="text">
-                   <string>In this application you can check
-all Warsaw's streets.
-They are divided into districts and
-nieghborhoods, which you can
- access via the map on the left side.
-After choosing the district, the map
-of the neighborhoods from this
-district will pop up. After choosing
-both district as well as neighborhood
-all the streets that run through chosen
-region of the city will be shown.
-You can also go to the Google Maps
- page of each street.
-Last option of the application is to
-mark visited streets. You can do that
-manually after searching the street or
-by .gpx file and the app will
-automatically check all the streets
-that were covered in Warsaw in that
-.gpx file.</string>
+                   <string>In this application you can check all Warsaw's streets. They are divided into districts and nieghborhoods, which you can access via the map on the left side. After choosing the district, the map of the neighborhoods from this district will pop up. After choosing both district as well as neighborhood all the streets that run through chosen region of the city will be shown. You can also go to the Google Maps page of each street. Last option of the application is to mark visited streets. You can do that manually after searching the street or by .gpx file and the app will automatically check all the streets that were covered in Warsaw in that .gpx file.</string>
                   </property>
                   <property name="textFormat">
                    <enum>Qt::AutoText</enum>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="db_name_label">
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
                   </property>
                  </widget>
                 </item>
@@ -1432,9 +1453,169 @@ that were covered in Warsaw in that
                  </widget>
                 </item>
                 <item>
+                 <widget class="QLabel" name="label_3">
+                  <property name="text">
+                   <string>You can choose any gpx file that will be read and all the streets visited on this file will be written below. This might not be 100% accurate as it checks every 10th point from .gpx file so it does not take few hours per file!</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="choose_gpx">
+                  <property name="text">
+                   <string>Choose .gpx file</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QProgressBar" name="gpx_progress">
+                  <property name="value">
+                   <number>24</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="time_layout">
+                  <property name="spacing">
+                   <number>3</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_5">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="text">
+                     <string>Estimated time left:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="time_left">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="text">
+                     <string>0</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_6">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="text">
+                     <string>seconds</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <widget class="QScrollArea" name="scrollArea_2">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>250</height>
+                   </size>
+                  </property>
+                  <property name="widgetResizable">
+                   <bool>true</bool>
+                  </property>
+                  <widget class="QWidget" name="scrollAreaWidgetContents_2">
+                   <property name="geometry">
+                    <rect>
+                     <x>0</x>
+                     <y>0</y>
+                     <width>100</width>
+                     <height>40</height>
+                    </rect>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_4">
+                    <item>
+                     <widget class="QLabel" name="gpx_streets">
+                      <property name="text">
+                       <string>TextLabel</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="change_seen_button">
+                  <property name="text">
+                   <string>Change those streets to seen</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QScrollArea" name="scrollArea">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>250</height>
+                   </size>
+                  </property>
+                  <property name="widgetResizable">
+                   <bool>true</bool>
+                  </property>
+                  <widget class="QWidget" name="scrollAreaWidgetContents">
+                   <property name="geometry">
+                    <rect>
+                     <x>0</x>
+                     <y>0</y>
+                     <width>100</width>
+                     <height>40</height>
+                    </rect>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_3">
+                    <item>
+                     <widget class="QLabel" name="changed_label">
+                      <property name="text">
+                       <string>TextLabel</string>
+                      </property>
+                      <property name="wordWrap">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </widget>
+                </item>
+                <item>
                  <spacer name="verticalSpacer_3">
                   <property name="orientation">
                    <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeType">
+                   <enum>QSizePolicy::Preferred</enum>
                   </property>
                   <property name="sizeHint" stdset="0">
                    <size>
@@ -1491,8 +1672,17 @@ that were covered in Warsaw in that
           </size>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
+          <property name="spacing">
+           <number>3</number>
+          </property>
+          <property name="topMargin">
+           <number>3</number>
+          </property>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <property name="spacing">
+             <number>3</number>
+            </property>
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_4">
               <item>
@@ -1506,7 +1696,7 @@ that were covered in Warsaw in that
                 <property name="maximumSize">
                  <size>
                   <width>250</width>
-                  <height>16777215</height>
+                  <height>20</height>
                  </size>
                 </property>
                 <property name="text">
@@ -1528,7 +1718,7 @@ that were covered in Warsaw in that
                 <property name="maximumSize">
                  <size>
                   <width>250</width>
-                  <height>16777215</height>
+                  <height>25</height>
                  </size>
                 </property>
                 <property name="text">

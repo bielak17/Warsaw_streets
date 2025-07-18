@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Warsaw Street Database</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>Warsaw_COA.png</normaloff>Warsaw_COA.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
