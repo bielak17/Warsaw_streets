@@ -236,7 +236,7 @@ Ulica Annopol/Białołęka/Żerań
 Ulica Józsefa Antalla/Białołęka/Tarchomin
 Ulica Arkony/Białołęka/Białołęka Dworska
 Ulica Aroniowa/Białołęka/Kobiałka
-Ulica Artyleryjska/Białołęka,Targówek/Brzeziny
+Ulica Artyleryjska/Białołęka/Brzeziny
 Ulica Astrowa/Białołęka/Grodzisk
 Ulica Atrakcyjna/Białołęka/Grodzisk
 Ulica Atutowa/Białołęka/Tarchomin
